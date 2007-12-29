@@ -1,0 +1,60 @@
+SimplyVersioned 0.1
+===================
+
+SimplyVersioned is a simple, non-invasive, approach to versioning ActiveRecord models.
+
+SimplyVersioned does not require any structural change to the models to be versioned and requires only one versions table to be created (a migration generator is supplied with the plugin) regardless of the number of models being versioned.
+
+The plugin introduces a 'Version' ActiveRecord model (that reflects changes to model attributes) to which versioned models are polymorphically associated. Version records store the model information as a YAML hash.
+	
+SimplyVersioned meets a simple need for model versioning. If your needs are more comples maybe try acts_as_versioned. SimplyVersioned has (so far) been tested and found to work with Rails 2.0.1 and Ruby 1.8.6p111.
+
+Usage
+=====
+
+1. Install the plugin
+
+  ./script/plugin install http://rubymatt.rubyforge.org/svn/simply_versioned
+
+2. Generate the migration
+
+  ./script/generate simply_versioned_migration
+
+3. Create the versions table
+
+  rake db:migrate
+
+4. Annotate the models you want to version specifying how many versions to keep
+
+	class Thing < ActiveRecord::Base
+	  simply_versioned :limit => 10
+	end
+
+5. Create versions
+
+	thing = Thing.create!( :foo => bar ) # creates v1
+	thing.foo = baz
+	thing.save! # creates v2
+
+6. Find versions
+
+  thing.versions.each do |version| ... end
+  render :partial => 'thing_version', :collection => thing.versions
+	thing.versions.current
+	thing.versions.first
+	thing.versions.get( n=1,2,3,... )
+
+7. Revert to a previous version
+
+	thing.revert_to_version( n=1,2,3,... )
+
+8. Traverse versions
+
+	thing.versions.current.previous
+	thing.versions.first.next
+
+9. Obtain a copy of a previous versioned model
+
+	thing.versions.first.model # => Instantiated Thinger with versioned values
+	
+Copyright (c) 2007 Matt Mower <self@mattmower.com> and released under the MIT license
