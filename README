@@ -1,7 +1,7 @@
 SimplyVersioned
 ===============
 
-Release:	0.4
+Release:	0.5
 Date:			30-12-2007
 Author:		Matt Mower <self@mattmower.com>
 
@@ -59,6 +59,7 @@ Usage
 7. Revert to a previous version
 
 	thing.revert_to_version( 5 )
+	thing.revert_to_version( 1, :except => [:name,:age] )
 
 8. Traverse versions
 

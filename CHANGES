@@ -1,3 +1,7 @@
+0.5 - 30-12-2007
+
+The revert_to_version call now takes an :except => [:name,:and,:so,:on] list of attributes whose value will not be reverted. The defautl is [:created_at,:updated_at].
+
 0.4 - 30-12-2007
 
 Changed some method names to reduce possibility of conflicts. Added more tests. Changed some method implementations w.r.t. empty versions to try and tease out a bug in production.

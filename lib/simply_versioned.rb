@@ -1,4 +1,4 @@
-# SimplyVersioned 0.4
+# SimplyVersioned 0.5
 #
 # Simple ActiveRecord versioning
 # Copyright (c) 2007 Matt Mower <self@mattmower.com>
@@ -57,17 +57,31 @@ module SoftwareHeretics
       module InstanceMethods
         
         # Revert this model instance to the attributes it had at the specified version number.
-        def revert_to_version( version )
+        #
+        # options:
+        # +except+ specify a list of attributes that are not restored (default: created_at, updated_at)
+        #
+        def revert_to_version( version, options = {} )
           version = if version.kind_of?( Version )
             version
           else
             version = self.versions.find( :first, :conditions => { :number => Integer( version ) } )
           end
-          self.update_attributes( YAML::load( version.yaml ) )
+          
+          options.reverse_merge!({
+            :except => [:created_at,:updated_at]
+          })
+          
+          reversion_data = YAML::load( version.yaml )
+          reversion_data.delete_if { |key,value| options[:except].include? key.to_sym }
+          reversion_data.each do |key,value|
+            self.__send__( "#{key}=", value )
+          end
         end
         
         # Invoke the block for this record with versioning disabled. Calls to save
         # during the block will not result in the creation of a new version.
+        #
         def without_versioning( &block )
           versioning_was_enabled = self.versioning_enabled?
           self.versioning_enabled = false

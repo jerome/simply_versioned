@@ -105,9 +105,18 @@ class SimplyVersionedTest < FixturedTestCase
     
     anthony.revert_to_version( 1 )
     assert_equal 35, anthony.age
+  end
+  
+  def test_should_revert_except
+    anthony = Aardvark.create!( :name => 'Anthony', :age => 35 ) # v1
     
-    assert_equal 3, anthony.versions.count
-    assert_equal 35, anthony.versions.current_version.model.age
+    anthony.name = "Tony"
+    anthony.age = 45
+    anthony.save! # v2
+    
+    anthony.revert_to_version( 1, :except => [:name,:created_at,:updated_at] )
+    assert_equal "Tony", anthony.name
+    assert_equal 35, anthony.age
   end
   
   def test_should_delete_dependent_versions
