@@ -149,11 +149,11 @@ class SimplyVersionedTest < FixturedTestCase
     end
     
     ulrica = Undine.find_by_name( 'Ulrica' )
-    ulrica.update_attributes( :married => 1 )
+    assert ulrica.unversioned?
     
+    ulrica.update_attributes( :married => 1 )    
     assert !ulrica.unversioned?
     assert_equal 1, ulrica.versions.size
-    
     assert_equal 1, ulrica.versions.first.model.married
   end
   
@@ -166,6 +166,19 @@ class SimplyVersionedTest < FixturedTestCase
     
     assert_equal anthony.versions.current_version, anthony.versions.first_version.next.next
     assert_equal anthony.versions.first_version, anthony.versions.current_version.previous.previous
+  end
+  
+  def test_should_be_trustworthy_collection
+    
+    anthony = Aardvark.create!( :name => 'Anthony', :age => 35 ) # v1
+    anthony.age += 1
+    anthony.save! #v2
+    
+    # Now create another record
+    
+    alan = Aardvark.create!( :name => 'Alan', :age => 35 )
+    assert_equal 1, alan.versions.size
+    
   end
   
 end
