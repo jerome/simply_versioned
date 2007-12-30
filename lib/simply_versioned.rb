@@ -1,4 +1,4 @@
-# SimplyVersioned 0.3
+# SimplyVersioned 0.4
 #
 # Simple ActiveRecord versioning
 # Copyright (c) 2007 Matt Mower <self@mattmower.com>
@@ -79,7 +79,11 @@ module SoftwareHeretics
         end
         
         def unversioned?
-          self.versions.empty?
+          self.versions.nil? || self.versions.size == 0
+        end
+        
+        def versioned?
+          !unversioned?
         end
         
         protected
@@ -87,7 +91,7 @@ module SoftwareHeretics
         def simply_versioned_create_version
           if self.versioning_enabled?
             if self.versions.create( :yaml => self.attributes.to_yaml )
-              self.versions.clean( simply_versioned_keep_limit )
+              self.versions.clean_old_versions( simply_versioned_keep_limit )
             end
           end
           true
@@ -98,34 +102,34 @@ module SoftwareHeretics
       module VersionsProxyMethods
         
         # Get the Version instance corresponding to this models for the specified version number.
-        def get( number )
+        def get_version( number )
           find_by_number( number )
         end
         
         # Get the first Version corresponding to this model.
-        def first
+        def first_version
           find( :first, :order => 'number ASC' )
         end
 
         # Get the current Version corresponding to this model.
-        def current
+        def current_version
           find( :first, :order => 'number DESC' )
         end
         
         # If the model instance has more versions than the limit specified, delete all excess older versions.
-        def clean( versions_to_keep )
+        def clean_old_versions( versions_to_keep )
           find( :all, :conditions => [ 'number <= ?', self.maximum( :number ) - versions_to_keep ] ).each do |version|
             version.destroy
           end
         end
         
         # Return the Version for this model with the next higher version
-        def next( number )
+        def next_version( number )
           find( :first, :order => 'number ASC', :conditions => [ "number > ?", number ] )
         end
         
         # Return the Version for this model with the next lower version
-        def prev( number )
+        def previous_version( number )
           find( :first, :order => 'number DESC', :conditions => [ "number < ?", number ] )
         end
       end

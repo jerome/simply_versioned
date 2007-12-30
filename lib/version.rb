@@ -1,4 +1,4 @@
-# SimplyVersioned 0.3
+# SimplyVersioned 0.4
 #
 # Simple ActiveRecord versioning
 # Copyright (c) 2007 Matt Mower <self@mattmower.com>
@@ -27,20 +27,20 @@ class Version < ActiveRecord::Base #:nodoc:
   
   # Return the next higher numbered version, or nil if this is the last version
   def next
-    versionable.versions.next( self.number )
+    versionable.versions.next_version( self.number )
   end
   
   # Return the next lower numbered version, or nil if this is the first version
   def previous
-    versionable.versions.prev( self.number )
+    versionable.versions.previous_version( self.number )
   end
 
 protected
   def before_create
-    self.number = if versionable.versions.empty?
-      1
+    if versionable.unversioned?
+      self.number = 1
     else
-      versionable.versions.maximum( :number ) + 1
+      self.number = versionable.versions.maximum( :number ) + 1
     end
   end
   
