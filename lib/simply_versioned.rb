@@ -1,4 +1,4 @@
-# SimplyVersioned 0.1
+# SimplyVersioned 0.3
 #
 # Simple ActiveRecord versioning
 # Copyright (c) 2007 Matt Mower <self@mattmower.com>
