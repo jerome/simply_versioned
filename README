@@ -1,7 +1,7 @@
 SimplyVersioned
 ===============
 
-Release:	0.2
+Release:	0.3
 Date:			30-12-2007
 Author:		Matt Mower <self@mattmower.com>
 
@@ -41,6 +41,12 @@ Usage
 	thing = Thing.create!( :foo => bar ) # creates v1
 	thing.foo = baz
 	thing.save! # creates v2
+
+	To save without creating a version use:
+	
+	thing.without_versioning do
+		thing.save
+	end
 
 6. Find versions
 

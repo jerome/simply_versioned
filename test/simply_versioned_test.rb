@@ -36,8 +36,14 @@ class SimplyVersionedTest < FixturedTestCase
   def self.suite_teardown
     ActiveRecord::Schema.define do
       drop_table :versions
+      drop_table :gnus
       drop_table :aardvarks
     end
+  end
+  
+  def test_should_start_with_empty_versions
+    anthony = Aardvark.new( :name => 'Anthony', :age => 35 )
+    assert anthony.unversioned?
   end
   
   def test_should_version_on_create
@@ -97,6 +103,17 @@ class SimplyVersionedTest < FixturedTestCase
     assert_equal 2, Version.count
     assert_equal 1, anthony.versions.first.number
     assert_equal 1, gary.versions.first.number
+  end
+  
+  def test_should_not_version_in_block
+    anthony = Aardvark.create!( :name => 'Anthony', :age => 35 ) # v1
+    
+    assert_no_difference( 'anthony.versions.count' ) do
+      anthony.age += 1
+      anthony.without_versioning do
+        anthony.save!
+      end
+    end
   end
   
 end
