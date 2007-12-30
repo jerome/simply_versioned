@@ -1,7 +1,11 @@
 require File.join( File.dirname( __FILE__ ), 'test_helper' )
 
 class Aardvark < ActiveRecord::Base
-  simply_versioned :limit => 3
+  simply_versioned :keep => 3
+end
+
+class Gnu < ActiveRecord::Base
+  simply_versioned :keep => 4
 end
 
 class SimplyVersionedTest < FixturedTestCase
@@ -11,6 +15,11 @@ class SimplyVersionedTest < FixturedTestCase
       create_table :aardvarks, :force => true do |t|
         t.string :name
         t.integer :age
+      end
+      
+      create_table :gnus, :force => true do |t|
+        t.string :name
+        t.text :description
       end
       
       create_table :versions, :force => true do |t|
@@ -79,6 +88,15 @@ class SimplyVersionedTest < FixturedTestCase
     assert_difference( 'Version.count', -2 ) do
       anthony.destroy
     end
+  end
+  
+  def test_should_isolate_versioned_models
+    anthony = Aardvark.create!( :name => 'Anthony', :age => 35 )
+    gary = Gnu.create!( :name => 'Gary', :description => 'Gary the GNU' )
+    
+    assert_equal 2, Version.count
+    assert_equal 1, anthony.versions.first.number
+    assert_equal 1, gary.versions.first.number
   end
   
 end

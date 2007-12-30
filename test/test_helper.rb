@@ -3,8 +3,11 @@ TEST_FOLDER = File.dirname( __FILE__ )
 
 $:.unshift( File.join( TEST_FOLDER, '..', 'lib' ) )
 
+HOST_APP_FOLDER = File.expand_path( ENV['HOST_APP'] || File.join( TEST_FOLDER, '..', '..', '..' ) )
+puts "Host application: #{HOST_APP_FOLDER}"
+
 require 'test/unit'
-require File.join( TEST_FOLDER, '..', '..', '..', '..', 'config', 'environment.rb' )
+require File.expand_path( File.join( HOST_APP_FOLDER, 'config', 'environment.rb' ) )
 require 'test_help'
 require 'turn' unless ENV['NO_TURN']
 
