@@ -1,3 +1,7 @@
+0.6 - 01-01-2008
+
+The default is now to keep all versions, specify :keep if you want to set a limit.
+
 0.5 - 30-12-2007
 
 The revert_to_version call now takes an :except => [:name,:and,:so,:on] list of attributes whose value will not be reverted. The defautl is [:created_at,:updated_at].

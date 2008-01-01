@@ -1,7 +1,7 @@
-# SimplyVersioned 0.5
+# SimplyVersioned 0.6
 #
 # Simple ActiveRecord versioning
-# Copyright (c) 2007 Matt Mower <self@mattmower.com>
+# Copyright (c) 2007,2008 Matt Mower <self@mattmower.com>
 # Released under the MIT license (see accompany MIT-LICENSE file)
 #
 
@@ -18,7 +18,7 @@ module SoftwareHeretics
         # the +versions+ association.
         #
         # Options:
-        # +limit+ - specifies the number of old versions to keep (default = 99)
+        # +limit+ - specifies the number of old versions to keep (default = nil, never delete old versions)
         #
         # To save the record without creating a version either set +versioning_enabled+ to false
         # on the model before calling save or, alternatively, use +without_versioning+ and save
@@ -26,7 +26,7 @@ module SoftwareHeretics
         #
         def simply_versioned( options = {} )
           options.reverse_merge!( {
-            :keep => 99
+            :keep => nil
           })
           
           has_many :versions, :order => 'number DESC', :as => :versionable, :dependent => :destroy, :extend => VersionsProxyMethods
@@ -105,7 +105,7 @@ module SoftwareHeretics
         def simply_versioned_create_version
           if self.versioning_enabled?
             if self.versions.create( :yaml => self.attributes.to_yaml )
-              self.versions.clean_old_versions( simply_versioned_keep_limit )
+              self.versions.clean_old_versions( simply_versioned_keep_limit.to_i ) if simply_versioned_keep_limit
             end
           end
           true

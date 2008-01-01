@@ -1,5 +1,7 @@
 require File.join( File.dirname( __FILE__ ), 'test_helper' )
 
+require 'mocha'
+
 class Aardvark < ActiveRecord::Base
   simply_versioned :keep => 3
 end
@@ -178,7 +180,6 @@ class SimplyVersionedTest < FixturedTestCase
   end
   
   def test_should_be_trustworthy_collection
-    
     anthony = Aardvark.create!( :name => 'Anthony', :age => 35 ) # v1
     anthony.age += 1
     anthony.save! #v2
@@ -187,7 +188,14 @@ class SimplyVersionedTest < FixturedTestCase
     
     alan = Aardvark.create!( :name => 'Alan', :age => 35 )
     assert_equal 1, alan.versions.size
-    
+  end
+  
+  def test_should_not_delete_old_versions_by_default
+    ulrica = Undine.create!( :name => 'Ulrica' )
+    ulrica.versions.expects( :clean_old_versions ).never
+    100.times do
+      ulrica.update_attribute( :married, 1 - ulrica.married )
+    end
   end
   
 end

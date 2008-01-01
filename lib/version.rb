@@ -1,7 +1,7 @@
-# SimplyVersioned 0.5
+# SimplyVersioned 0.6
 #
 # Simple ActiveRecord versioning
-# Copyright (c) 2007 Matt Mower <self@mattmower.com>
+# Copyright (c) 2007,2008 Matt Mower <self@mattmower.com>
 # Released under the MIT license (see accompany MIT-LICENSE file)
 #
 
