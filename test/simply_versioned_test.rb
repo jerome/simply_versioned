@@ -37,8 +37,7 @@ class SimplyVersionedTest < FixturedTestCase
         t.string    :versionable_type
         t.integer   :number
         t.text      :yaml
-
-        t.timestamps
+        t.datetime  :created_at
       end
     end
   end

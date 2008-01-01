@@ -1,6 +1,7 @@
 0.6 - 01-01-2008
 
 The default is now to keep all versions, specify :keep if you want to set a limit.
+Dropped the updated_at column from revisions as unnecessary.
 
 0.5 - 30-12-2007
 

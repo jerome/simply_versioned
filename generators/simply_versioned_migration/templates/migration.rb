@@ -6,8 +6,7 @@ class SimplyVersionedMigration < ActiveRecord::Migration
       t.string    :versionable_type
       t.integer   :number
       t.text      :yaml
-      
-      t.timestamps      
+      t.datetime  :created_at
     end
     
     add_index :versions, [:versionable_id, :versionable_type]
