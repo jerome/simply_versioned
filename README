@@ -13,7 +13,7 @@ The plugin introduces a 'Version' ActiveRecord model (that reflects changes to m
 	
 SimplyVersioned meets a simple need for model versioning. If your needs are more complex maybe try Rick Olsen's acts_as_versioned (http://svn.techno-weenie.net/projects/plugins/acts_as_versioned/).
 	
-SimplyVersioned has (so far) been tested and found to work with Rails 2.0.1 and Ruby 1.8.6p111.
+SimplyVersioned is (so far) actively tested with Rails 2.0.2 and Ruby 1.8.6p111 on MacOSX.
 
 Usage
 =====
