@@ -1,4 +1,4 @@
-# SimplyVersioned 0.6
+# SimplyVersioned 0.7
 #
 # Simple ActiveRecord versioning
 # Copyright (c) 2007,2008 Matt Mower <self@mattmower.com>
@@ -79,14 +79,14 @@ module SoftwareHeretics
           end
         end
         
-        # Invoke the block for this record with versioning disabled. Calls to save
-        # during the block will not result in the creation of a new version.
-        #
-        def without_versioning( &block )
+        # Invoke the supplied block passing the receiver as the sole block argument with
+        # versioning enabled or disabled depending upon the value of the +enabled+ parameter
+        # for the duration of the block.
+        def with_versioning( enabled, &block )
           versioning_was_enabled = self.versioning_enabled?
-          self.versioning_enabled = false
+          self.versioning_enabled = enabled
           begin
-            yield self
+            block.call( self )
           ensure
             self.versioning_enabled = versioning_was_enabled
           end

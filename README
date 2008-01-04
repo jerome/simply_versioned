@@ -1,8 +1,8 @@
 SimplyVersioned
 ===============
 
-Release:	0.6
-Date:			01-01-2008
+Release:	0.7
+Date:			04-01-2008
 Author:		Matt Mower <self@mattmower.com>
 
 SimplyVersioned is a simple, non-invasive, approach to versioning ActiveRecord models.
@@ -26,6 +26,10 @@ Usage
 
   ./script/generate simply_versioned_migration
 
+	Note that the migration defaults to storing the version info in a TEXT field. On MySQL this will default to a
+	limit of 64K. If you are versioning particularly large models you will want to modify the migration to include
+	a :limit => n condition to promote the yaml column to a MEDIUMTEXT or (god forbid) a LONGTEXT.
+
 3. Create the versions table
 
   rake db:migrate
@@ -48,12 +52,16 @@ Usage
 	thing = Thing.create!( :foo => bar ) # creates v1
 	thing.foo = baz
 	thing.save! # creates v2
-
-	To save without creating a version use:
 	
-	thing.without_versioning do
-		thing.save
+	If you need to control whether a version is created or not, use #with_versioning. For example:
+	
+	thing.with_versioning( false ) do |t|
+		t.save!
 	end
+	
+	or, using the "magic pen" (http://dablog.rubypal.com/2007/2/18/the-magic-pens-of-ruby thanks hmj):
+	
+	thing.with_versioning( false, &:save! )
 
 6. Find versions
 
@@ -76,5 +84,10 @@ Usage
 9. Obtain a copy of a previous versioned model
 
 	thing.versions.first.model # => Instantiated Thing with versioned values
+	
+Thanks to:
+
+	Josh Susser (http://blog.hasmanythrough.com/) for useful suggestions and feedback
+	Rick Olson (http://techno-weenie.net/) for all the many plugins whose code i've read
 	
 Copyright (c) 2007 Matt Mower <self@mattmower.com> and released under the MIT license

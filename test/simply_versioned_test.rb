@@ -139,12 +139,26 @@ class SimplyVersionedTest < FixturedTestCase
     assert_equal 1, gary.versions.first.number
   end
   
+  def test_should_be_able_to_control_versioning
+    anthony = Aardvark.create!( :name => 'Anthony', :age => 35 ) # v1
+
+    assert_no_difference( 'anthony.versions.count' ) do
+      anthony.age += 1
+      anthony.with_versioning( false, &:save! )
+    end
+    
+    assert_difference( 'anthony.versions.count' ) do
+      anthony.age += 1
+      anthony.with_versioning( true, &:save! )
+    end
+  end
+  
   def test_should_not_version_in_block
     anthony = Aardvark.create!( :name => 'Anthony', :age => 35 ) # v1
     
     assert_no_difference( 'anthony.versions.count' ) do
       anthony.age += 1
-      anthony.without_versioning do
+      anthony.with_versioning( false ) do
         anthony.save!
       end
     end
