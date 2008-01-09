@@ -1,8 +1,8 @@
 SimplyVersioned
 ===============
 
-Release:	0.7
-Date:			04-01-2008
+Release:	0.8
+Date:			08-01-2008
 Author:		Matt Mower <self@mattmower.com>
 
 SimplyVersioned is a simple, non-invasive, approach to versioning ActiveRecord models.
@@ -46,6 +46,15 @@ Usage
 	thing.versions.clean_old_version( 10 )
 	
 	which would delete all the but the last ten versions.
+	
+	If you want fine-grained control over when versions are created you can use:
+	
+	class Thing < ActiveRecord::Base
+		simply_versioned :automatic => false
+	end
+	
+	and new versions will no longer be created by default. You will then need to use
+	the with_versioning method to create a version.
 
 5. Create versions
 

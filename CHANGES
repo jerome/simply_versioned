@@ -1,3 +1,11 @@
+0.8 - 08-01-2008
+
+Added an :automatic option (default: true)
+
+0.7 - 04-01-2008
+
+The without_versioning method becomes with_versioning( exp )
+
 0.6 - 01-01-2008
 
 The default is now to keep all versions, specify :keep if you want to set a limit.

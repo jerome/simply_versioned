@@ -1,4 +1,4 @@
-# SimplyVersioned 0.7
+# SimplyVersioned 0.8
 #
 # Simple ActiveRecord versioning
 # Copyright (c) 2007,2008 Matt Mower <self@mattmower.com>
@@ -10,6 +10,12 @@ module SoftwareHeretics
   module ActiveRecord
   
     module SimplyVersioned
+      
+      class BadOptions < StandardError
+        def initialize( keys )
+          super( "Keys: #{keys.join( "," )} are not known by SimplyVersioned" )
+        end
+      end
     
       module ClassMethods
         
@@ -24,9 +30,14 @@ module SoftwareHeretics
         # on the model before calling save or, alternatively, use +without_versioning+ and save
         # the model from its block.
         #
+        
         def simply_versioned( options = {} )
+          bad_keys = options.keys - [:keep,:automatic]
+          raise SimplyVersioned::BadOptions.new( bad_keys ) unless bad_keys.empty?
+          
           options.reverse_merge!( {
-            :keep => nil
+            :keep => nil,
+            :automatic => true
           })
           
           has_many :versions, :order => 'number DESC', :as => :versionable, :dependent => :destroy, :extend => VersionsProxyMethods
@@ -36,6 +47,9 @@ module SoftwareHeretics
           cattr_accessor :simply_versioned_keep_limit
           self.simply_versioned_keep_limit = options[:keep]
           
+          cattr_accessor :simply_versioned_save_by_default
+          self.simply_versioned_save_by_default = options[:automatic]
+          
           class_eval do
             def versioning_enabled=( enabled )
               self.instance_variable_set( :@simply_versioned_enabled, enabled )
@@ -44,7 +58,7 @@ module SoftwareHeretics
             def versioning_enabled?
               enabled = self.instance_variable_get( :@simply_versioned_enabled )
               if enabled.nil?
-                enabled = self.instance_variable_set( :@simply_versioned_enabled, true )
+                enabled = self.instance_variable_set( :@simply_versioned_enabled, self.simply_versioned_save_by_default )
               end
               enabled
             end

@@ -13,6 +13,10 @@ end
 class Undine < ActiveRecord::Base
 end
 
+class Heffalump < ActiveRecord::Base
+  simply_versioned :automatic => false
+end
+
 class SimplyVersionedTest < FixturedTestCase
   
   def self.suite_setup
@@ -32,6 +36,10 @@ class SimplyVersionedTest < FixturedTestCase
         t.integer :married, :default => 0
       end
       
+      create_table :heffalumps, :force => true do |t|
+        t.string :name
+      end
+      
       create_table :versions, :force => true do |t|
         t.integer   :versionable_id
         t.string    :versionable_type
@@ -47,6 +55,14 @@ class SimplyVersionedTest < FixturedTestCase
       drop_table :versions
       drop_table :gnus
       drop_table :aardvarks
+    end
+  end
+  
+  def test_should_reject_unknown_options
+    assert_raises SoftwareHeretics::ActiveRecord::SimplyVersioned::BadOptions do
+      cls = Class.new( ActiveRecord::Base ) do
+        simply_versioned :bogus => true
+      end
     end
   end
   
@@ -208,6 +224,24 @@ class SimplyVersionedTest < FixturedTestCase
     ulrica.versions.expects( :clean_old_versions ).never
     100.times do
       ulrica.update_attribute( :married, 1 - ulrica.married )
+    end
+  end
+  
+  def test_should_not_automatically_create_versions
+    henry = Heffalump.create!( :name => 'Henry' )
+    assert_equal 0, henry.versions.count
+    
+    assert_no_difference( 'henry.versions.count' ) do
+      henry.name = 'Harry'
+      henry.save!
+    end
+  end
+  
+  def test_should_create_versions_on_demand
+    henry = Heffalump.create!( :name => 'Henry' )
+    
+    assert_difference( "henry.versions.count", 1 ) do
+      henry.with_versioning( true, &:save )
     end
   end
   
