@@ -1,7 +1,7 @@
 SimplyVersioned
 ===============
 
-Release:	0.9
+Release:	0.9.1
 Date:			24-01-2008
 Author:		Matt Mower <self@mattmower.com>
 
@@ -43,7 +43,7 @@ Usage
 	If you do not specify a limit then old versions are never automatically deleted. You can
 	manually delete them like this:
 	
-	thing.versions.clean_old_version( 10 )
+	thing.versions.purge( 10 )
 	
 	which would delete all the but the last ten versions.
 	
@@ -91,7 +91,16 @@ Usage
 7. Revert to a previous version
 
 	thing.revert_to_version( 5 )
+	
+	If a specific reversion needs to avoid overwriting some column values pass
+	an :except option, e.g.
+	
 	thing.revert_to_version( 1, :except => [:name,:age] )
+	
+	The revert_to_version method also takes an existing Version instance, e.g.
+	
+	version = thing.versions.find( ... )
+	thing.revert_to_version( version )
 
 8. Traverse versions
 

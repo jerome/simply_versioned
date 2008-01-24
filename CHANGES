@@ -1,3 +1,8 @@
+0.9.1 - 24-01-2008
+
+Improved implementation of revert_to_version with further tests.
+Provided clean aliases for methods in VersionProxy.
+
 0.9 - 24-01-2008
 
 Added an :exclude option (default: [])

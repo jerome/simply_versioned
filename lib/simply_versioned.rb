@@ -1,4 +1,4 @@
-# SimplyVersioned 0.9
+# SimplyVersioned 0.9.1
 #
 # Simple ActiveRecord versioning
 # Copyright (c) 2007,2008 Matt Mower <self@mattmower.com>
@@ -16,7 +16,7 @@ module SoftwareHeretics
           super( "Keys: #{keys.join( "," )} are not known by SimplyVersioned" )
         end
       end
-    
+      
       module ClassMethods
         
         # Marks this ActiveRecord model as being versioned. Calls to +create+ or +save+ will,
@@ -76,27 +76,29 @@ module SoftwareHeretics
       # Methods that will be defined on the ActiveRecord model being versioned
       module InstanceMethods
         
-        # Revert this model instance to the attributes it had at the specified version number.
+        # Revert the attributes of this model to their values as of an earlier version.
+        #
+        # Pass either a Version instance or a version number.
         #
         # options:
         # +except+ specify a list of attributes that are not restored (default: created_at, updated_at)
         #
         def revert_to_version( version, options = {} )
-          version = if version.kind_of?( Version )
-            version
-          else
-            version = self.versions.find( :first, :conditions => { :number => Integer( version ) } )
-          end
-          
           options.reverse_merge!({
             :except => [:created_at,:updated_at]
           })
           
-          reversion_data = YAML::load( version.yaml )
-          reversion_data.delete_if { |key,value| options[:except].include? key.to_sym }
-          reversion_data.each do |key,value|
-            self.__send__( "#{key}=", value )
+          version = if version.kind_of?( Version )
+            version
+          elsif version.kind_of?( Fixnum )
+            self.versions.find_by_number( version )
           end
+          
+          raise "Invalid version (#{version.inspect}) specified!" unless version
+          
+          options[:except] = options[:except].map( &:to_s )
+          
+          self.update_attributes( YAML::load( version.yaml ).except( *options[:except] ) )
         end
         
         # Invoke the supplied block passing the receiver as the sole block argument with
@@ -139,16 +141,19 @@ module SoftwareHeretics
         def get_version( number )
           find_by_number( number )
         end
+        alias_method :get, :get_version
         
         # Get the first Version corresponding to this model.
         def first_version
           find( :first, :order => 'number ASC' )
         end
+        alias_method :first, :first_version
 
         # Get the current Version corresponding to this model.
         def current_version
           find( :first, :order => 'number DESC' )
         end
+        alias_method :current, :current_version
         
         # If the model instance has more versions than the limit specified, delete all excess older versions.
         def clean_old_versions( versions_to_keep )
@@ -156,16 +161,19 @@ module SoftwareHeretics
             version.destroy
           end
         end
+        alias_method :purge, :clean_old_versions
         
         # Return the Version for this model with the next higher version
         def next_version( number )
           find( :first, :order => 'number ASC', :conditions => [ "number > ?", number ] )
         end
+        alias_method :next, :next_version
         
         # Return the Version for this model with the next lower version
         def previous_version( number )
           find( :first, :order => 'number DESC', :conditions => [ "number < ?", number ] )
         end
+        alias_method :previous, :previous_version
       end
 
       def self.included( receiver )

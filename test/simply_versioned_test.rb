@@ -96,13 +96,17 @@ class SimplyVersionedTest < FixturedTestCase
     anthony.save!
     
     assert_equal 35, anthony.versions.get_version(1).model.age
+    assert_equal 35, anthony.versions.get(1).model.age
+    
     assert_equal 36, anthony.versions.get_version(2).model.age
+    assert_equal 36, anthony.versions.get(2).model.age
   end
   
   def test_should_version_on_create
     anthony = Aardvark.create!( :name => 'Anthony', :age => 35 )
     assert_equal 1, anthony.versions.count
     assert_equal 1, anthony.versions.current_version.number
+    assert_equal 1, anthony.versions.current.number
   end
   
   def test_should_version_on_save
@@ -125,7 +129,9 @@ class SimplyVersionedTest < FixturedTestCase
     
     assert_equal 3, anthony.versions.count
     assert_equal 36, anthony.versions.first_version.model.age
+    assert_equal 36, anthony.versions.first.model.age
     assert_equal 38, anthony.versions.current_version.model.age
+    assert_equal 38, anthony.versions.current.model.age
   end
   
   def test_should_revert
@@ -147,6 +153,25 @@ class SimplyVersionedTest < FixturedTestCase
     anthony.revert_to_version( 1, :except => [:name,:created_at,:updated_at] )
     assert_equal "Tony", anthony.name
     assert_equal 35, anthony.age
+  end
+  
+  def test_should_raise_on_reversion_to_bad_version
+    anthony = Aardvark.create!( :name => 'Anthony', :age => 35 ) # v1
+    anthony.name = "Tony"
+    anthony.age = 45
+    anthony.save! # v2
+    
+    assert_raise RuntimeError do
+      anthony.revert_to_version( -1 )
+    end
+    
+    assert_raise RuntimeError do
+      anthony.revert_to_version( "a" )
+    end
+    
+    assert_raise RuntimeError do
+      anthony.revert_to_version( nil )
+    end
   end
   
   def test_should_delete_dependent_versions
