@@ -17,6 +17,11 @@ class Heffalump < ActiveRecord::Base
   simply_versioned :automatic => false
 end
 
+class Saproling < ActiveRecord::Base
+  simply_versioned :exclude => [:trouble]
+  
+end
+
 class SimplyVersionedTest < FixturedTestCase
   
   def self.suite_setup
@@ -40,6 +45,11 @@ class SimplyVersionedTest < FixturedTestCase
         t.string :name
       end
       
+      create_table :saprolings, :force => true do |t|
+        t.string :name
+        t.string :trouble
+      end
+      
       create_table :versions, :force => true do |t|
         t.integer   :versionable_id
         t.string    :versionable_type
@@ -53,6 +63,9 @@ class SimplyVersionedTest < FixturedTestCase
   def self.suite_teardown
     ActiveRecord::Schema.define do
       drop_table :versions
+      drop_table :saprolings
+      drop_table :heffalumps
+      drop_table :undines
       drop_table :gnus
       drop_table :aardvarks
     end
@@ -243,6 +256,13 @@ class SimplyVersionedTest < FixturedTestCase
     assert_difference( "henry.versions.count", 1 ) do
       henry.with_versioning( true, &:save )
     end
+  end
+  
+  def test_should_exclude_columns
+    sylvia = Saproling.create!( :name => 'Sylvia', :trouble => "big" )
+    
+    yaml = YAML::load( sylvia.versions.first.yaml )
+    assert_equal Set.new( [ "id", "name" ] ), Set.new( yaml.keys )
   end
   
 end

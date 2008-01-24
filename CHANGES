@@ -1,3 +1,7 @@
+0.9 - 24-01-2008
+
+Added an :exclude option (default: [])
+
 0.8 - 08-01-2008
 
 Added an :automatic option (default: true)

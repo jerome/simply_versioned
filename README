@@ -1,8 +1,8 @@
 SimplyVersioned
 ===============
 
-Release:	0.8
-Date:			08-01-2008
+Release:	0.9
+Date:			24-01-2008
 Author:		Matt Mower <self@mattmower.com>
 
 SimplyVersioned is a simple, non-invasive, approach to versioning ActiveRecord models.
@@ -55,6 +55,14 @@ Usage
 	
 	and new versions will no longer be created by default. You will then need to use
 	the with_versioning method to create a version.
+	
+	Lastly you can control which columns will be versioned by specifying an exclude parameter.
+	
+	class Thing < ActiveRecord::Base
+		simply_versioned :exclude => [:some_awkward_column]
+	end
+	
+	This may be helpful if you run into conflicts with other plugins which try to manage columns.
 
 5. Create versions
 

@@ -1,4 +1,4 @@
-# SimplyVersioned 0.8
+# SimplyVersioned 0.9
 #
 # Simple ActiveRecord versioning
 # Copyright (c) 2007,2008 Matt Mower <self@mattmower.com>
@@ -25,6 +25,8 @@ module SoftwareHeretics
         #
         # Options:
         # +limit+ - specifies the number of old versions to keep (default = nil, never delete old versions)
+        # +automatic+ - controls whether versions are created automatically (default = true, save versions)
+        # +exclude+ - specify columns that will not be saved (default = [], save all columns)
         #
         # To save the record without creating a version either set +versioning_enabled+ to false
         # on the model before calling save or, alternatively, use +without_versioning+ and save
@@ -32,12 +34,13 @@ module SoftwareHeretics
         #
         
         def simply_versioned( options = {} )
-          bad_keys = options.keys - [:keep,:automatic]
+          bad_keys = options.keys - [:keep,:automatic,:exclude]
           raise SimplyVersioned::BadOptions.new( bad_keys ) unless bad_keys.empty?
           
           options.reverse_merge!( {
             :keep => nil,
-            :automatic => true
+            :automatic => true,
+            :exclude => []
           })
           
           has_many :versions, :order => 'number DESC', :as => :versionable, :dependent => :destroy, :extend => VersionsProxyMethods
@@ -49,6 +52,9 @@ module SoftwareHeretics
           
           cattr_accessor :simply_versioned_save_by_default
           self.simply_versioned_save_by_default = options[:automatic]
+          
+          cattr_accessor :simply_versioned_excluded_columns
+          self.simply_versioned_excluded_columns = options[:exclude].map( &:to_s )
           
           class_eval do
             def versioning_enabled=( enabled )
@@ -118,7 +124,7 @@ module SoftwareHeretics
         
         def simply_versioned_create_version
           if self.versioning_enabled?
-            if self.versions.create( :yaml => self.attributes.to_yaml )
+            if self.versions.create( :yaml => self.attributes.except( *simply_versioned_excluded_columns ).to_yaml )
               self.versions.clean_old_versions( simply_versioned_keep_limit.to_i ) if simply_versioned_keep_limit
             end
           end
