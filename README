@@ -1,7 +1,7 @@
 SimplyVersioned
 ===============
 
-Release:	0.9.2
+Release:	0.9.3
 Date:			28-01-2008
 Author:		Matt Mower <self@mattmower.com>
 
@@ -93,6 +93,10 @@ Usage
 	thing.versions.current
 	thing.versions.first
 	thing.versions.get( 3 )
+	
+	To find a version number:
+	
+	thing.version_number
 
 7. Revert to a previous version
 

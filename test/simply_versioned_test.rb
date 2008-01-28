@@ -299,4 +299,15 @@ class SimplyVersionedTest < FixturedTestCase
     assert_equal ['some_column'], klass.simply_versioned_excluded_columns
   end
   
+  def test_should_report_version_number
+    anthony = Aardvark.new( :name => 'Anthony', :age => 35 )
+    assert_equal 0, anthony.version_number
+    
+    anthony.save!
+    assert_equal 1, anthony.version_number
+    
+    anthony.save!
+    assert_equal 2, anthony.version_number # and so on
+  end
+  
 end

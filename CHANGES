@@ -1,3 +1,7 @@
+0.9.3	- 28-01-2008
+
+Fixed #version_number to versioned instances as a shortcut
+
 0.9.2 - 28-01-2008
 
 Fixed :exclude => :column now equivalent to :exclude => [:column]

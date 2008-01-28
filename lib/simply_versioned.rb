@@ -1,4 +1,4 @@
-# SimplyVersioned 0.9.2
+# SimplyVersioned 0.9.3
 #
 # Simple ActiveRecord versioning
 # Copyright (c) 2007,2008 Matt Mower <self@mattmower.com>
@@ -120,6 +120,14 @@ module SoftwareHeretics
         
         def versioned?
           !unversioned?
+        end
+        
+        def version_number
+          if self.versions.empty?
+            0
+          else
+            self.versions.current.number
+          end
         end
         
         protected
