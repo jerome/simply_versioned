@@ -1,4 +1,4 @@
-# SimplyVersioned 0.9.1
+# SimplyVersioned 0.9.2
 #
 # Simple ActiveRecord versioning
 # Copyright (c) 2007,2008 Matt Mower <self@mattmower.com>
@@ -54,7 +54,7 @@ module SoftwareHeretics
           self.simply_versioned_save_by_default = options[:automatic]
           
           cattr_accessor :simply_versioned_excluded_columns
-          self.simply_versioned_excluded_columns = options[:exclude].map( &:to_s )
+          self.simply_versioned_excluded_columns = Array( options[ :exclude ] ).map( &:to_s )
           
           class_eval do
             def versioning_enabled=( enabled )

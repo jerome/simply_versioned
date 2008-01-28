@@ -1,4 +1,4 @@
-# SimplyVersioned 0.9.1
+# SimplyVersioned 0.9.2
 #
 # Simple ActiveRecord versioning
 # Copyright (c) 2007,2008 Matt Mower <self@mattmower.com>

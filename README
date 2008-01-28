@@ -59,7 +59,13 @@ Usage
 	Lastly you can control which columns will be versioned by specifying an exclude parameter.
 	
 	class Thing < ActiveRecord::Base
-		simply_versioned :exclude => [:some_awkward_column]
+		simply_versioned :exclude => :awkward_column
+	end
+		
+	or	
+	
+	class Thing < ActiveRecord::Base
+		simply_versioned :exclude => [:first_awkward_column,:second_awkward_column,...]
 	end
 	
 	This may be helpful if you run into conflicts with other plugins which try to manage columns.

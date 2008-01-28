@@ -19,7 +19,6 @@ end
 
 class Saproling < ActiveRecord::Base
   simply_versioned :exclude => [:trouble]
-  
 end
 
 class SimplyVersionedTest < FixturedTestCase
@@ -284,10 +283,20 @@ class SimplyVersionedTest < FixturedTestCase
   end
   
   def test_should_exclude_columns
+    assert_equal ["trouble"], Saproling.simply_versioned_excluded_columns
+    
     sylvia = Saproling.create!( :name => 'Sylvia', :trouble => "big" )
     
     yaml = YAML::load( sylvia.versions.first.yaml )
     assert_equal Set.new( [ "id", "name" ] ), Set.new( yaml.keys )
+  end
+  
+  def test_should_exclude_column_equivalent_syntax
+    klass = Class.new( ActiveRecord::Base )
+    klass.module_eval <<-DEFN
+      simply_versioned :exclude => :some_column
+    DEFN
+    assert_equal ['some_column'], klass.simply_versioned_excluded_columns
   end
   
 end
