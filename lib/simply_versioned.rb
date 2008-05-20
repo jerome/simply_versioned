@@ -45,8 +45,11 @@ module SoftwareHeretics
           
           has_many :versions, :order => 'number DESC', :as => :versionable, :dependent => :destroy, :extend => VersionsProxyMethods
 
-          after_save :simply_versioned_create_version
-          
+          before_save :save_new_record_status
+          before_save :simply_versioned_keep_dirty_version
+          after_save  :simply_versioned_create_versions
+          after_save  :unset_new_record_status
+                              
           cattr_accessor :simply_versioned_keep_limit
           self.simply_versioned_keep_limit = options[:keep]
           
@@ -132,10 +135,38 @@ module SoftwareHeretics
         
         protected
         
-        def simply_versioned_create_version
-          if self.versioning_enabled?
-            if self.versions.create( :yaml => self.attributes.except( *simply_versioned_excluded_columns ).to_yaml )
-              self.versions.clean_old_versions( simply_versioned_keep_limit.to_i ) if simply_versioned_keep_limit
+        def save_new_record_status
+          @was_new_record = self.new_record?
+          true
+        end
+
+        def unset_new_record_status
+          @was_new_record = false
+          true
+        end
+        
+        def simply_versioned_keep_dirty_version
+          changed_attr = self.changes.except(*simply_versioned_excluded_columns)
+          @dirty_attributes = if self.versioning_enabled? && !self.new_record? && !changed_attr.empty?
+            changed_attr.each {|k,v| changed_attr[k] = v.first }
+          else
+            { }
+          end
+          true
+        end
+        
+        def simply_versioned_create_versions
+          # new or unchanged records are not versioned while first time
+          # versioning will create two versions in the same time
+          unless @was_new_record
+            if self.versioning_enabled? && !@dirty_attributes.empty?
+              if self.unversioned?
+                self.versions.create( :yaml => self.attributes.except( *simply_versioned_excluded_columns).merge(@dirty_attributes).to_yaml )
+              end
+
+              if self.versions.create( :yaml => self.attributes.except( *simply_versioned_excluded_columns ).to_yaml )
+                self.versions.clean_old_versions( simply_versioned_keep_limit.to_i ) if simply_versioned_keep_limit
+              end
             end
           end
           true

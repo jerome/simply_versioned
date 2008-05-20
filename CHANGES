@@ -1,3 +1,9 @@
+0.9.3.1 - 20-05-2008 Jérôme Lipowicz
+
+Pragmatic branch (using dirty parameters, rails 2.1 only)
+New records are not versioned: two versions are created at once  upon first record update.
+Unchanged records are not versioned too.
+
 0.9.3	- 28-01-2008
 
 Fixed #version_number to versioned instances as a shortcut

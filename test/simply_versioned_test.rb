@@ -84,8 +84,21 @@ class SimplyVersionedTest < FixturedTestCase
     assert anthony.unversioned?
   end
   
+  def test_should_not_be_versioned
+    anthony = Aardvark.create!( :name => 'Anthony', :age => 35 )
+    assert anthony.unversioned?
+  end
+
+  def test_should_not_be_versioned_when_new_record_is_still_unchanged
+    anthony = Aardvark.create!( :name => 'Anthony', :age => 35 )
+    anthony.save!
+    assert anthony.unversioned?
+  end
+
   def test_should_be_versioned
     anthony = Aardvark.create!( :name => 'Anthony', :age => 35 )
+    anthony.age  += 1
+    anthony.save!
     assert anthony.versioned?
   end
   
@@ -101,11 +114,11 @@ class SimplyVersionedTest < FixturedTestCase
     assert_equal 36, anthony.versions.get(2).model.age
   end
   
-  def test_should_version_on_create
+  def test_should_not_version_on_create
     anthony = Aardvark.create!( :name => 'Anthony', :age => 35 )
-    assert_equal 1, anthony.versions.count
-    assert_equal 1, anthony.versions.current_version.number
-    assert_equal 1, anthony.versions.current.number
+    assert_equal 0, anthony.versions.count
+    assert_equal 0, anthony.versions.current_version.number
+    assert_equal 0, anthony.versions.current.number
   end
   
   def test_should_version_on_save
