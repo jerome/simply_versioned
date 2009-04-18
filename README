@@ -21,7 +21,7 @@ Usage
 
 1. Install the plugin
 
-  ./script/plugin install http://rubymatt.rubyforge.org/svn/simply_versioned
+  ./script/plugin install git://github.com/jerome/simply_versioned.git
 
 2. Generate the migration
 
