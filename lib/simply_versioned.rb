@@ -40,7 +40,7 @@ module SoftwareHeretics
           options.reverse_merge!( {
             :keep => nil,
             :automatic => true,
-            :exclude => []
+            :exclude => [:updated_at, :position]
           })
           
           has_many :versions, :order => 'number DESC', :as => :versionable, :dependent => :destroy, :extend => VersionsProxyMethods
